@@ -21,7 +21,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class RoborockContext:
-    roborock_file = Path("~/.roborock").expanduser()
+    roborock_file = Path(".roborock").expanduser()
     _login_data: LoginData | None = None
 
     def __init__(self):
