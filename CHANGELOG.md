@@ -2,6 +2,36 @@
 
 <!--next-version-placeholder-->
 
+## v2.5.0 (2024-06-25)
+
+### Feature
+
+* Add some typing ([#219](https://github.com/humbertogontijo/python-roborock/issues/219)) ([`35d0900`](https://github.com/humbertogontijo/python-roborock/commit/35d09000b8d144cbaf935069952ea135950d0e78))
+
+## v2.4.0 (2024-06-25)
+
+### Feature
+
+* Add some missing codes and make warnings only message once ([#218](https://github.com/humbertogontijo/python-roborock/issues/218)) ([`12361b5`](https://github.com/humbertogontijo/python-roborock/commit/12361b58e7a4d368281c4ffd9ac3d8e9d8155e62))
+
+## v2.3.0 (2024-06-07)
+
+### Feature
+
+* Add warning in web requests if it fails to decode ([#215](https://github.com/humbertogontijo/python-roborock/issues/215)) ([`6ae69e9`](https://github.com/humbertogontijo/python-roborock/commit/6ae69e9bcba6a98736f2f480114922186f6ca458))
+
+## v2.2.3 (2024-06-04)
+
+### Fix
+
+* S8 maxv has a wash and fill dock ([#213](https://github.com/humbertogontijo/python-roborock/issues/213)) ([`018fd05`](https://github.com/humbertogontijo/python-roborock/commit/018fd052360dffd238919e336943809720457c4e))
+
+## v2.2.2 (2024-05-16)
+
+### Fix
+
+* Handle weird clean record response ([#206](https://github.com/humbertogontijo/python-roborock/issues/206)) ([`07ce71a`](https://github.com/humbertogontijo/python-roborock/commit/07ce71a2cd8085136952bd7639f6f4a2e273faf9))
+
 ## v2.2.1 (2024-05-11)
 
 ### Fix

@@ -65,6 +65,7 @@ WASH_N_FILL_DOCK = [
     RoborockDockTypeCode.empty_wash_fill_dock,
     RoborockDockTypeCode.s8_dock,
     RoborockDockTypeCode.p10_dock,
+    RoborockDockTypeCode.s8_maxv_ultra_dock,
 ]
 RT = TypeVar("RT", bound=RoborockBase)
 EVICT_TIME = 60
@@ -104,7 +105,7 @@ class AttributeCache:
     def stop(self):
         self.task.cancel()
 
-    async def update_value(self, params):
+    async def update_value(self, params) -> None:
         if self.attribute.set_command is None:
             raise RoborockException(f"{self.attribute.attribute} have no set command")
         response = await self.api._send_command(self.attribute.set_command, params)
@@ -118,7 +119,7 @@ class AttributeCache:
         await self._async_value()
         return response
 
-    async def close_value(self, params=None):
+    async def close_value(self, params=None) -> None:
         if self.attribute.close_command is None:
             raise RoborockException(f"{self.attribute.attribute} have no close command")
         response = await self.api._send_command(self.attribute.close_command, params)
@@ -153,7 +154,7 @@ class RoborockClientV1(RoborockClient):
         super().release()
         [item.stop() for item in self.cache.values()]
 
-    async def async_release(self):
+    async def async_release(self) -> None:
         await super().async_release()
         [item.stop() for item in self.cache.values()]
 
@@ -197,6 +198,24 @@ class RoborockClientV1(RoborockClient):
         if isinstance(record, dict):
             return CleanRecord.from_dict(record)
         elif isinstance(record, list):
+            if isinstance(record[-1], dict):
+                records = [CleanRecord.from_dict(rec) for rec in record]
+                final_record = records[-1]
+                try:
+                    # This code is semi-presumptions - so it is put in a try finally to be safe.
+                    final_record.begin = records[0].begin
+                    final_record.begin_datetime = records[0].begin_datetime
+                    final_record.start_type = records[0].start_type
+                    for rec in records[0:-1]:
+                        final_record.duration += rec.duration if rec.duration is not None else 0
+                        final_record.area += rec.area if rec.area is not None else 0
+                        final_record.avoid_count += rec.avoid_count if rec.avoid_count is not None else 0
+                        final_record.wash_count += rec.wash_count if rec.wash_count is not None else 0
+                        final_record.square_meter_area += (
+                            rec.square_meter_area if rec.square_meter_area is not None else 0
+                        )
+                finally:
+                    return final_record
             # There are still a few unknown variables in this.
             begin, end, duration, area = unpack_list(record, 4)
             return CleanRecord(begin=begin, end=end, duration=duration, area=area)
@@ -277,7 +296,7 @@ class RoborockClientV1(RoborockClient):
         """Gets the mapping from segment id -> iot id. Only works on local api."""
         mapping: list = await self.send_command(RoborockCommand.GET_ROOM_MAPPING)
         if isinstance(mapping, list):
-            if not isinstance(mapping[0], list) and len(mapping) == 2:
+            if len(mapping) == 2 and not isinstance(mapping[0], list):
                 return [RoomMapping(segment_id=mapping[0], iot_id=mapping[1])]
             return [
                 RoomMapping(segment_id=segment_id, iot_id=iot_id)  # type: ignore
